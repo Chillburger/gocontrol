@@ -2,6 +2,8 @@ package main
 
 import (
   "fmt"
+  "strings"
+  "golang.org/x/tour/pic"
 )
 
 // this is a struct, which is a collection of fields
@@ -16,6 +18,25 @@ var (
     v3 = Vertex{} // X:0 and Y: 0
     point = &Vertex{1 ,2} // has type *Vertex
 )
+
+
+func printSlice( slice []int) {
+  fmt.Printf("len=%d cap=%d %v \n", len(slice), cap(slice), slice)
+}
+
+// returns a slice of length dy
+// each element of which is a slice of dx 8-bit unsigned integers
+func Pic(dx, dy int) [][]uint8 {
+    var picture = make([][]uint8, dy)
+    for i := 0; i < dy; i++ {
+        picture[i] = make([]uint8, dx)
+        for j := 0; j < dx; j++ {
+          picture[i][j] = uint8(i*j/2)
+        }
+    }
+
+    return picture
+}
 
 func main() {
     // go has pointers!!! here's an example
@@ -123,5 +144,125 @@ func main() {
 
     slicer = slicer[1:]
     fmt.Println(slicer)
+
+    // slice length and capacity
+    // length of a slice is the number of elements it contains
+
+    sliceExample := []int{2, 3, 5, 7, 11, 13}
+    printSlice(sliceExample)
+
+    // slice the slice to give it zero length
+    sliceExample = sliceExample[:0]
+    printSlice(sliceExample)
+
+    // Extend its length
+    sliceExample = sliceExample[:4]
+    printSlice(sliceExample)
+
+    // drop firs two values
+    sliceExample = sliceExample[1:]
+    printSlice(sliceExample)
+
+    sliceExample = sliceExample[:0]
+    printSlice(sliceExample)
+    sliceExample = sliceExample[:5]
+    printSlice(sliceExample)
+
+
+    // nil slices
+
+    var nilSlice []int
+    fmt.Println(nilSlice, len(nilSlice), cap(nilSlice))
+
+    nilSlice = []int{ 1, 2, 3, 4}
+    fmt.Println("Setting nilSlice to something:", nilSlice, len(nilSlice), cap(nilSlice))
+    if nilSlice == nil {
+      fmt.Println("nil!")
+    } else {
+      fmt.Println("Not nil")
+    }
+
+    // creating a slice with make
+    // slice can be dynamically created with the built in make FoundationConfiguration
+    // this is how you create dynamically sized arrays
+    // make function allocates a zeroed array and returns a slice that refers to that array
+    aMake := make([]int, 5) // len(aMake)=5
+    printSlice(aMake)
+
+    bMake := make([]int, 0, 5) // specifcy a capacity, len(bMake)=0, cap(bMake)=5
+    printSlice(bMake)
+
+    cMake := bMake[:2]
+    printSlice(cMake)
+
+    dMake := cMake[2:5]
+    printSlice(dMake)
+
+
+    // slices of Slices
+    //create a tictac toe board
+    board := [][]string {
+      []string{"_","_","_"},
+      []string{"_","_","_"},
+      []string{"_","_","_"},
+    }
+
+    // players take turns
+    board[0][0] = "X"
+    board[2][2] = "O"
+    board[1][2] = "X"
+    board[1][0] = "O"
+    board[0][2] = "X"
+
+    for i := 0; i < len(board); i++ {
+      fmt.Printf("%s\n", strings.Join(board[i], " "))
+    }
+
+
+    // appending to a sliceExample
+    // it's common to add new elements to a slice, using the append FoundationConfiguration
+
+    var appendSlice []int
+    printSlice(appendSlice)
+
+    appendSlice = append(appendSlice, 0)
+    printSlice(appendSlice)
+
+    appendSlice = append(appendSlice, 1)
+    printSlice(appendSlice)
+
+    appendSlice = append(appendSlice, 1, 2, 3, 4)
+    printSlice(appendSlice)
+
+    // range form of the for loop interates over a slice or a map
+
+    var pow  = []int{1, 2, 4, 8, 16, 32, 64, 128}
+
+    for i, v := range pow {
+      fmt.Printf("2**%d = %d\n", i, v)
+    }
+
+    // you can skip the index or value by assigning to _
+
+    powDrop := make([]int, 10)
+
+    for i := range powDrop {
+      powDrop[i] = 1 << uint(i) // 2**i
+    }
+    for _, value := range powDrop {
+      fmt.Printf("%d\n", value)
+    }
+
+
+    // Slice exercise
+    // implement Pic, should return a slice of length dy, each element of which
+    // is a slice of dx 7-bit unsigned integers
+    // When you run the program, it will display your picture, interpretting the integers
+    // as grayscale values
+
+    // same functions: (x+y)/2, x*y, x^y
+    // need to use a loop to allocate each []uint8 instide the [][]uint8
+    // use uint8(intValue) to convert between types
+    pic.Show(Pic)
 
 }
